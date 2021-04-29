@@ -4,14 +4,19 @@ import hashlib
 import configparser
 from datetime import datetime;
 
+
 class _Database:
-    def __init__(self):
+    def __init__(self,database_name):
         try:
             self.conn = pymysql.connect(host="127.0.0.1",user=input("请输入用户名："), password=input("请输入密码："),charset = "utf8",port=3306);
         except Exception as E:
             print("链接数据库失败")
             print(E);
         self.cursor = self.conn.cursor();
+        
+        self._select_database(database_name);
+    
+            
         
 
     def _execute(self, sql_command):
@@ -46,30 +51,43 @@ class _Database:
             sql = "CREATE DATABASE "+ database_name;
             self._execute(sql);
             print("创建成功");
+        self._select_database(database_name);
 
-    def select_database(self,database):
-        self._execute("USE "+ database);
-        self.conn.commit();#一定要 commit 才能选择某个表
+    def _select_database(self,database):
+        if isexist_database(database):
+            
+            self._execute("USE "+ database);
+            self.conn.commit();#一定要 commit 才能选择某个表
+            self.database_name = database;
+        else:
+            self._create_database(database);
 
-    def _show_tables(self,database):
-        self.select_database(database);
+    def show_tables(self):
         sql = "show tables";
         self._execute(sql);
         res = self.cursor.fetchall();
         return res;
 
-    def isexist_table(self,database,table):
-        tables = self._show_tables(database);
+    def isexist_table(self,table):
+        tables = self._show_tables();
         for t in tables:
             if table == t[0]:
                 return True;
         return False;
 
-    def create_table(self,database,table,create_table_sql):
-        if not self.isexist_table(database,table):
+    def create_table(self,table,create_table_sql):
+        if not self.isexist_table(table):
             self._execute(create_table_sql);
         else:
-            print(table,"已经存在");
+            print(table,"已经存在"table);
+
+    def show_record_nums(self,table_name):
+        sql = "SELECT count(*) from " + table_name;
+        self._execute(sql);
+        return self.cursor.fetchone();
+
+    def _init_data(self,data):
+        pass
 
     def insert_datas(self,table_name,data):
         # list类型
@@ -84,7 +102,7 @@ class _Database:
             print("载入完成");
             self.conn.commit();
         
-        #dict类型
+        #dict类型 TODO
 
     def insert_data(self,table_name,data):
         #插入一条数据
@@ -107,11 +125,11 @@ class _Database:
             
 
 if __name__=="__main__":
-    test = _Database();
+    test = _Database("改航");
     #test._show_databases();
-    print(test._show_tables("改航"));
-    table_name = "";
-    print(test.isexist_table("改航","改航原始数据表"));
+    print(test._show_tables());
+    print(test.isexist_table("改航原始数据表"));
+    print(test.show_record_nums("改航原始数据表"));
     #test._create_database();
     #test._create_tables("改航","改航原始数据表");
     
