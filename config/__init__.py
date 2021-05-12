@@ -23,8 +23,7 @@ if __name__=="config":
         #数据库
         config["Database"]["DBname"] = "改航";
         config["Tables"] = {};
-        config["Tables"]["改航原始数据表"] = "id,flt_number,tof_3airport,arv_3airport,airroute,sch_time,act_time,remarks";
-        config["Tables"]["延误表"] = "id,flt_id,is_delay,delay_time";
+        config["Tables"]["改航原始数据表"] = "id,flt_number,tof_3airport,arv_3airport,airroute,sch_time,act_time,delay_time,remarks";
         config["Tables"]["机场三四码表"] = "id,3airport,4airport";
         config["Tables"]["用户表"] = "id,name,password,auth";
         

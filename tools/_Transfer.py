@@ -53,7 +53,7 @@ class _Transfer:
                 #index+=1;
             elif i==1:
                 #第二张表
-                index = 13
+                index = 13;
                 
             raw_data = table.row_values(index);
             #原始数据
@@ -73,7 +73,7 @@ class _Transfer:
                 raw_act_time = trans_time(temp2);
 
                 day_delta = 0;
-                if (raw_act_time < raw_sch_time):
+                if (raw_act_time < raw_sch_time and raw_sch_time.tm_hour == 23 and raw_act_time.tm_hour==0):
                     day_delta = 1
                     #跨天,days+1
 

@@ -13,7 +13,6 @@ if __name__ == "__main__":
     print("初始化数据库");
     database_name = config["Database"]["DBname"];
     db = _Database(database_name);
-    
     for table in config["Tables"]:
         if not db.isexist_table(table):
             #db不存在table
@@ -39,6 +38,22 @@ if __name__ == "__main__":
 
     print("数据转换");
     transfer = _Transfer(".\excels\改航数据汇总--返航备降数据.xls");
+    
+    if db.show_record_nums("改航原始数据表")[0] == 0:
+       #若原始数据表没有数据 需要从excel表中插入数据
+       for data in transfer.data:
+           str_sch = data[4].strftime("%Y-%m-%d %H:%M");
+           str_act = data[5].strftime("%Y-%m-%d %H:%M");
+           delays = 0;
+           if data[5] > data[4] and (data[5] - data[4]).seconds/60 >30:
+               delays = (data[5] - data[4]).seconds / 60;
+           
+           sql = "INSERT INTO 改航原始数据表"+" (flt_number,tof_3airport,arv_3airport,airroute,sch_time,act_time,delay_time,remarks)"\
+                      " VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')"%\
+                      (data[0],data[1],data[2],data[3],str_sch,str_act,delays,data[6]);
+           
+           db.insert_data("改航原始数据表",sql);
+    print("原始数据转移完成...");
     
     db.quit();
     

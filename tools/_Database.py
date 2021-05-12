@@ -10,7 +10,7 @@ class _Database:
         try:
             self.conn = pymysql.connect(host="127.0.0.1",user=input("请输入用户名："), password=input("请输入密码："),charset = "utf8",port=3306);
         except Exception as E:
-            print("链接数据库失败")
+            print("链接数据库失败,",end="")
             print(E);
         else:
             
@@ -63,7 +63,7 @@ class _Database:
         else:
             self._create_database(database);
 
-    def _drop_databse(self):
+    def _drop_database(self):
         command = input("是否删除数据库? y or n");
         if command == "y":
             self._execute("DROP DATABASE IF EXISTS " + self.database_name);
@@ -88,6 +88,24 @@ class _Database:
             return self._execute(create_table_sql)
         else:
             return 1;
+
+    def drop_table(self,table):
+        if self.isexist_table(table):
+            sql = "DROP TABLE IF EXISTS "+table;
+            return self._execute(sql);
+        return 0;
+
+    def truncate_table(self,table):
+        if self.isexist_table(table):
+            sql = "TRUNCATE TABLE "+table;
+            return self._execute(sql);
+        return 0;
+
+    def delete_table(self,table):
+        if self.isexist_table(table):
+            sql = "DELETE FROM "+table +" WHERE id >0";
+            return self._execute(sql);
+        return 0;
 
     def show_record_nums(self,table_name):
         sql = "SELECT count(*) from " + table_name;
@@ -121,7 +139,6 @@ class _Database:
                       # VALUES ('%s','%s','%s','%s','%s','%s','%s')"%\
                        #(data[0],data[1],data[2],data[3],str_sch,str_act,data[6]);
         self._execute(sql);
-        print("表", table_name,"插入数据库完成");
         self.conn.commit();
 
     def quit(self):
